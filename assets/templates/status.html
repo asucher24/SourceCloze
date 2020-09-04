@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="status-section">
+    <div class="center-content message-header">
+     {{ message.header }}
+    </div>
+    <br />
+    <div class="center-content">
+       {% if "successfully" in message.text  %}
+            <i class="far fa-grin-alt syntax-True"></i>
+        {% endif %}
+
+        {% if "hack" in message.text  %}
+        <i class="far fa-meh-rolling-eyes syntax-Forbidden"></i>
+        {% endif %}
+
+        {% if "wrong" in message.text  %}
+        <i class="far fa-frown syntax-False"></i>
+        {% endif %}
+
+        {% if "not compile" in message.text  %}
+        <i class="far fa-meh-blank syntax-None"></i>
+        {% endif %}
+    </div>
+    <br />
+    <div class="center-content message-text">
+     {{ message.text }}
+    </div>
+</section>
+{% endblock %}

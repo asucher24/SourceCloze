@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section vote-section">
+    <details class="details-vote">
+          <summary class="summary-vote">
+              Code:
+          </summary>
+          <div class="code-preview">
+              <pre><code class="language-{{ language }}" id="code-view">{{ code }}</code></pre>
+          </div>
+    </details>
+    <form action="{% url 'views:status' %}" method="post">
+    {% csrf_token %}
+        <input type="hidden" value="{{ cloze_test_id }}" name="cloze_test_id" />
+        <div class="answer-field fade-in" id="cloze-solution">
+            <div class="answer-header">
+                <div id="answer-number">Your Answer</div>
+            </div>
+            <div class="answer-content" id="answer-field">
+                {% for cloze_num in cloze_count %}
+                <div class="row">
+                    <div>#{{ cloze_num }}:</div>
+                    <div class="column code-preview">
+                        <input class="cloze-input" type="text" name="cloze_{{ cloze_num }}" value=" "/>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="center-content">
+            <input class="button join-button" type="submit" value="Submit">
+        </div>
+    </form>
+</section>
+{% endblock %}

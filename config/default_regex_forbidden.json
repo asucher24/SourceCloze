@@ -1,0 +1,40 @@
+// Summery of regular expression which should be checked for each answer of a poll result.
+// If a answer contains a regex. it will not be compiled/executed.
+// each Regex (eg "eval") will be transformed like: (.*?)eval(.*?)
+// that means eval would also be found in the middle of the string
+// make sure to encode the encoders
+// Example:
+// 		regex: eval\\(.*?\\) will be transformed to actuall regex: (.*?)eval\(.*?\)(.*?)
+//		and will catch strings like: eval(), eval(foo...), fooeval(), fooeval()bar, eval()bar
+//		but not: eval foo
+//
+// ----> ! After updating, please restart application ! <----
+// It is also possible to add regular expressions through the GUI
+//	visit for that: <your_url>/admin/poll_api/forbiddenexectext
+{ 
+	"all":[
+		"eval\\(.*?\\)", // actually: (.*?)eval\(.*?\)(.*?)
+		"exec\\(.*?\\)"
+	],
+	"python":[
+		"system\\(.*?\\)",
+		"subprocess\\(.*?\\)",
+		"run\\(.*?\\)",
+		"socket\\(.*?\\)",
+		"dup2\\(.*?\\)",
+		"exec\\(.*?\\)",
+		"spawn\\(.*?\\)",
+		"popen\\(.*?\\)",
+		"open\\(.*?\\)",
+		"shutil\\(.*?\\)",
+		"copyfile\\(.*?\\)",
+		"copy2\\(.*?\\)",
+		"rename\\(.*?\\)",
+		"move\\(.*?\\)"
+	],
+	"r":[],
+	"java":[], // will be only compiled. Not executed. Actually no need to create regular expressions
+	"c":[], // will be only compiled. Not executed. Actually no need to create regular expressions
+	"c++":[], // will be only compiled. Not executed. Actually no need to create regular expressions
+	"javascript":[]// will be only compiled. Not executed. Actually no need to create regular expressions
+}

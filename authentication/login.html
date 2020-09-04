@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section home-section">
+    <div class="center-content">
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'auth:logout' %}?next={{ request.path|urlencode }}" class="button logout-button">Logout gitlab</a>
+            <br /> firstname: {{request.user.first_name}}
+            <br /> lastname: {{request.user.last_name}}
+            <br /> mail: {{request.user.email}}
+        {% else %}
+            <!-- <a href="{% url 'auth:social:begin' 'gitlab' %}?next={{ request.path|urlencode }}" class="button login-button"><i class="fab fa-gitlab"></i>Login with gitlab</a> -->
+            <form class="footer-form"  action="{% url 'auth:social:begin' 'gitlab' %}?next={{ request.path|urlencode }}">
+                <button class="button login-button" type="submit" value="Login"><i class="fab fa-gitlab"></i> Login with gitlab</button>
+            </form>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+
+
+{% block footer %}
+
+{% endblock %}

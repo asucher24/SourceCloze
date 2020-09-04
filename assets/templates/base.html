@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Source Cloze{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'prism/prism.css' %}" />
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" integrity="sha256-h20CPZ0QyXlBuAw7A+KluUYx/3pK+c7lYEpqLTlxjYQ=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    
+    <link rel="shortcut icon" href="{% static 'source-cloze-logo-pen.png' %}" />
+
+  {% endblock %}
+</head>
+
+<body onload="fetchCloze()">
+    <div class="header">
+        <div class="item">
+            <a href="{% url 'views:home' %}">
+            <img class="logo" src="{% static 'source-cloze-logo.png' %}" alt="sourcecloze">
+            </a>
+        </div>
+        <div class="item">
+        {% block footer %}
+        <form class="footer-form"  action="{% url 'views:create-poll-view' %}">
+            <button class="button createpoll-button" type="submit" value="Create your own poll">
+                <span class="fa-stack">
+                <i class="fas fa-plus-square fa-2x"></i>
+                </span>
+                <p class="footer-btn-txt"> Define poll</p>
+            </button>
+        </form>
+        {% endblock %}
+        </div>
+    </div>
+    <div class="body">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div class="footer">
+        <div class="row" style="width:100%;">
+            <div style="float: left;"><b>Source Cloze</b> is free software </div>
+            <div class="right creators"><div class="righttxt">2019 Josua Glodde</div>, <div class="righttxt"> 2020 Anna Sucher</div></div>
+        </div>
+    </div>
+</body>
+    <!-- jQuery -->
+    <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+    <!-- Syntax highlighter -->
+    <script type="text/javascript" src="{% static 'prism/prism.js' %}"></script>
+    <!-- Main script -->
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+</html>

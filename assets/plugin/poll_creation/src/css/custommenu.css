@@ -1,0 +1,104 @@
+/* Menu Buttons */
+ /* Dropdown Button */
+#open-menu {
+  /*background-color: #3498DB;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;*/
+}
+
+/* Dropdown button on hover & focus */
+#open-menu:hover, #open-menu:focus {
+  /*background-color: #2980B9;*/
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  /*background-color: #f1f1f1;*/
+  /*min-width: 160px;*/
+  /*box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);*/
+  z-index: 1000;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  /*color: black;*/
+  /*padding: 12px 16px;*/
+  /*text-decoration: none;*/
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+/*.dropdown-content a:hover {background-color: #ddd}*/
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;} 
+
+
+/* context menu */
+.context-menu {
+  display: none;
+  position: absolute;
+  z-index: 10;
+  padding: 12px 0;
+  width: 240px;
+  background-color: #fff;
+  border: solid 1px #dfdfdf;
+  box-shadow: 1px 1px 2px #cfcfcf;
+}
+
+.context-menu--active {
+  display: block;
+}
+
+.context-menu__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.context-menu__item {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.context-menu__item:last-child {
+  margin-bottom: 0;
+}
+
+.context-menu__link {
+  display: block;
+  padding: 4px 12px;
+  color: #0066aa;
+  text-decoration: none;
+}
+
+.context-menu__link:hover {
+  color: #fff;
+  background-color: #0066aa;
+}
+
+
+#svgcomponent > .tooltip {visibility: hidden}
+#svgcomponent:hover > .tooltip {
+    visibility: visible;
+}
+.tooltip text {
+    fill: black;
+    font-size: 12px;
+    font-family: sans-serif;
+}
+.tooltip rect {
+    fill: yellow;
+    stroke: blue;
+}

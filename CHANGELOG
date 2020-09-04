@@ -1,0 +1,30 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [2.0] - 20.07.2020
+### Deprecated
+- powerpoint add-in (not tested for this version); use pdf extport feature
+### Added
+- login necceccary for create/edit/start/stop poll
+- possibility to access each poll-admin page (access/edit/start/stop existing polls)
+- show polloverview (only own polls)
+- syntax-check is available on resolution view and after participation on poll (languages: py, java, js, r, c, c++; python/R is using docker container)
+- timer is available for stopping the poll in x minutes
+- export views as pdf slide
+### Changed
+- Add-in is now part of django application
+- resolution now available also for each gap
+
+## [1.0] - 08.07.2019 (noted 08.07.2020)
+### Added
+- Office powerpoint add-in for poll creation including: Creating, starting, stopping polls, show resolution of bundled anwers (Add-in as spa: cannot access existing polls)
+- Django webapplication: Pages: build gui for different pages of poll participation
+- Django webapplication: api: methods for changing data
+
+

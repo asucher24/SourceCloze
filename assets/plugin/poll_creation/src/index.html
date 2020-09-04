@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SourceCloze</title>
+    <!-- ExternalLibs in polladmin/pub-->
+    <script type="text/javascript" src="{% static 'poll_creation/pub/handlebars/handlebars.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'poll_creation/pub/jQuery/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'poll_creation/pub/qrCode/qrcode.min.js' %}"></script>
+
+    <!-- Office JavaScript API -->
+    <!-- <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.debug.js"></script> -->
+
+    <!-- CDN -->
+    <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
+
+
+
+    <!-- Syntax highlighter styles -->
+    <script type="text/javascript" src="{% static 'poll_creation/pub/prism/prism.js' %}"></script>
+    <link href="{% static 'poll_creation/pub/prism/prism.css' %}" rel="stylesheet" type="text/css">
+    
+    <!-- PDF Creation https://github.com/MrRio/jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"> </script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js" integrity="sha512-jzL0FvPiDtXef2o2XZJWgaEpVAihqquZT/tT89qCVaxVuHwJ/1DFcJ+8TBMXplSJXE8gLbVAUv+Lj20qHpGx+A==" crossorigin="anonymous"></script> -->
+
+    <!-- Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.js" integrity="sha256-EhSd26A4BBY7cx1qenrGNmgTke2gzkGS0HDPmLVVQ6w=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.css" integrity="sha256-2SjB4U+w1reKQrhbbJOiQFARkAXA5CGoyk559PJeG58=" crossorigin="anonymous" />
+
+    <!-- Template styles -->
+    <link href="{% static 'poll_creation/src/css/custommenu.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'poll_creation/src/css/loadingicon.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'poll_creation/src/css/dropdown.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'poll_creation/src/css/progressbarTimer.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'poll_creation/src/css/app.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'poll_creation/src/css/overlay.css' %}" rel="stylesheet" type="text/css">
+
+    <link rel="shortcut icon" href="{% static 'poll_creation/pub/assets/source-cloze-logo-pen.png' %}" />
+</head>
+<script>
+{% if url %}
+    var url = '{{ url }}';
+    var url_id = url + '/views/id/';
+{% else %}
+    console.error("URL not found");
+{% endif %}
+{% if request.user.is_authenticated %}
+    var ctCreator = '{{request.user.username}}'
+{% endif %}
+
+ function openHelp(){
+    document.getElementById('viewHelp').style.display = 'block';
+    document.getElementById('main').style.display = 'none';
+    document.getElementById('right-side').style.display = 'none';
+    document.getElementById('footer-button-row').style.display = 'none';
+    $('#help-button').prop("disabled", true);
+    
+}
+ function closeHelp(){
+    document.getElementById('viewHelp').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    document.getElementById('right-side').style.display = 'block';
+    document.getElementById('footer-button-row').style.display = 'block';
+    $('#help-button').prop("disabled", false);
+ }
+$(function(){
+  $("#includedContent").load("{% static 'poll_creation/src/doc.html' %}");
+  closeHelp()
+});
+</script>
+<body>
+    <div class="centered-wrapper"><div id="spinner" class="spinner" title="6"></div></div>
+    <div id="viewHelp" class="overlay">
+      <!-- Button to close the overlay navigation -->
+      <a href="javascript:void(0)" class="closebtn"  id="closeNavElement"  onclick="closeHelp()">&times;</a>
+      <div class="overlay-content"  id="includedContent"></div>
+    </div>
+    <div id="body">
+    <!-- <div w3-include-html="doc.html"></div>  -->
+    <div class="header">
+        <img id="logo" class="logo" width="300" height="64" src="{% static 'poll_creation/pub/assets/source-cloze-logo.png' %}" alt="SourceCloze" title="SourceCloze" />
+        {% if request.user.is_authenticated %}
+            <div class="right">
+            <h1 class="welcome-info right "> Welcome {{request.user.first_name}} {{request.user.last_name}}!</h1>
+            <div>
+
+                <!-- </div> -->
+                <div class="column right logout-btn-div"  
+                    onclick="location.href='{% url 'auth:logout' %}?next={{ request.path|urlencode }}';">
+                    <button class="ms-Button ms-Button--primary header-button" id="logout-button" title="Logging out">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-sign-out-alt"></i>
+                            <p class="footer-btn-txt">Logout</p>
+                        </span>
+                    </button>
+                </div>
+                <div class="column right logout-btn-div"  
+                    onclick="location.href='{% url 'views:show-polls-view' %}';">
+                    <button class="ms-Button ms-Button--primary header-button" id="overview-button" title="Show all your polls">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-bars"></i>
+                            <p class="footer-btn-txt">Polls</p>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="column right logout-btn-div"  
+                    onclick="openHelp()">
+                    <button class="ms-Button ms-Button--primary header-button" id="help-button" title="Show help for poll admin">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-info-circle"></i>
+                            <p class="footer-btn-txt">Help</p>
+                        </span>
+                    </button>
+                </div>
+
+            </div>
+            </div>
+                {% endif %}
+    </div>
+    <div class="main" id="main">
+        <section id="create-body">
+            <label id="pollIdLabel">Poll-ID: <div id="pollId" style="display: inline-block;">{{ct_id}}</div></label>
+            <div class="ms-TextField">
+              <label class="ms-Label">Cloze-Name</label>
+              <input class="ms-TextField-field" id="code-name" type="text" value="Print-Poll">
+            </div>
+
+            <div class="select-wrapper ms-TextField">
+                <label class="ms-Label" id="language-dropdown-lbl">Language</label>
+                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
+                <select class="dropdown " id="language-dropdown">
+                    <option val="python">Python</option>
+                    <option val="java">Java</option>
+                    <option val="c">C</option>
+                    <option val="c++">C++</option>
+                    <option val="r">R</option>
+                    <option val="javascript">JavaScript</option>
+                </select>
+                <!-- <i class="fas fa-angle-down"></i> -->
+            </div>
+
+
+            <div class="ms-TextField ms-TextField--multiline">
+                <!-- <label class="ms-TextField-description">Source code</label> -->
+                <label class="ms-Label">Source code</label>
+                <textarea class="ms-TextField-field" id="code-text" rows="6"># Welcome to SourceCloze!
+# -> To define the visible code for participants use:
+#    { SOURCE } and { SOURCEEND }   (without spaces)
+# -> For creating a gap in your cloze use:
+#    CL {gap answer} ZE    (without spaces)
+# See example below:
+
+def returns42():  
+    return 42
+{SOURCE}
+def hello_world():
+    print(CL{"Hello, World!"}ZE)  # prints: Hello, World!
+    return (returns42() == CL{42}ZE) # returns True
+{SOURCEEND}
+def main():
+    hello_world()
+main()
+</textarea>
+            </div>
+
+            <div class="myrow editing-row">
+                <div class="column range-slider">
+                    <span class="ms-Toggle-description">Code size</span>
+                    <input type="range" id="code-size-slider" value="18" min="12" max="32">
+                </div>
+                <div class="column ms-Toggle">
+                    <span class="ms-Toggle-description">Show answers</span>
+                    <input type="checkbox" id="cloze-toggle" class="ms-Toggle-input" />
+                    <label for="cloze-toggle" class="ms-Toggle-field" id="cloze-toggle-lbl" tabindex="0">
+                        <span class="ms-Label ms-Label--off">Off</span>
+                        <span class="ms-Label ms-Label--on">On</span>
+                    </label>
+                </div>
+                <div class="column ms-Toggle">
+                    <span class="ms-Toggle-description">Show source</span>
+                    <input type="checkbox" id="source-toggle" class="ms-Toggle-input" />
+                    <label for="source-toggle" class="ms-Toggle-field" id="source-toggle-lbl" tabindex="0">
+                        <span class="ms-Label ms-Label--off">Off</span>
+                        <span class="ms-Label ms-Label--on">On</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <div class="code-preview">
+            <div class="myrow" id="code-preview-settings" >
+                <div class="column ms-Toggle  ms-Toggle--textLeft">
+                    <span class="ms-Toggle-description">Show source</span>
+                    <input type="checkbox" id="source-toggle" class="ms-Toggle-input" />
+                    <label for="source-toggle" class="ms-Toggle-field" id="source-toggle-lbl" tabindex="0">
+                        <span class="ms-Label ms-Label--off">Off</span>
+                        <span class="ms-Label ms-Label--on">On</span>
+                    </label>
+                </div>
+            </div>
+            <div id="code-preview-code"><pre id="code-view-wrapper"><code class="language-python" id="code-view"></code></pre></div>
+        </div>
+
+        
+    </div>
+    <div class="sidebar" id="right-side">
+        <div id="ms-Dropdown-answerView" class="ms-Dropdown" tabindex="0" style="/*display: none;*/">
+            <select class="ms-Dropdown ms-Dropdown-select" id="answerview-dropdown" >
+                <option selected value="byBundle">Sort by bundled answer</option>
+                <option value="byEach">Sort by each gap</option>
+            </select>
+            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
+        </div>
+        <div class="cloze-id-info" style="/*display:inline-block !important*/">
+            <button class="ms-Button ms-Button--primary" id="reset-clozes-button" style="/*display: none;float:left;*/">
+                <span class="ms-Button-label">
+                    <i id="footer-btn" class="fas fa-hashtag"></i>
+                    <p id="" style="display: inline-block;">Reset</p>
+                </span>
+            </button>
+            <div class="cloze-id-count cloze-id-count-stopped" style="/*float:right;*/">
+                <i class="fas fa-user-check"></i> 
+                <div id="cloze-id-count-stopped"  style="/*display:inline-block;*/">0</div>
+            </div>
+        </div>
+        <section id="sidebar"></section>
+    </div>
+    <div class="footer">
+        <section id="footer-button-row" class="poll-button">
+            <div class="myrow">
+                <!-- Settings: -->
+                <!-- <div class="" id="open-menu"> -->
+                    <!-- <button class="ms-Button ms-Button--primary" id="open-menu" onclick="openMenuButtons()">
+                        <span class="ms-Button-label">
+                            <i class="fas fa-ellipsis-v"></i>
+                            <!-- <i id="footer-btn" class="far fa-plus-square"></i> -->
+                            <!-- <p id="footer-btn-txt">Create poll</p> -->
+                        <!-- </span> -->
+                    <!-- </button> -->
+                <!-- </div> -->
+                <div class="column" id="create-poll">
+                    <button class="ms-Button ms-Button--primary" id="create-poll-button" title="Create new poll">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-plus"></i>
+                            <p class="footer-btn-txt">Create poll</p>
+                        </span>
+                    </button>
+                </div>
+                <div class="column" id="update-poll">
+                    <button class="ms-Button ms-Button--primary" id="update-poll-button" title="Update existing poll">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-pencil-alt"></i>
+                            <p class="footer-btn-txt">Update poll</p>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="column" id="edit-poll">
+                    <button class="ms-Button ms-Button--secondary" id="edit-poll-button" title="Edit this poll">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-edit"></i>
+                            <p class="footer-btn-txt">Edit poll</p>
+                        </span>
+                    </button>
+                </div>
+                <div class="column" id="start-poll">
+                    <button class="ms-Button ms-Button--primary" id="start-poll-button" title="Start this poll">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-play"></i>
+                            <p class="footer-btn-txt">Start poll</p>
+                        </span>
+                    </button>
+                </div>
+                <div class="column" id="activate-poll">
+                    <button class="ms-Button ms-Button--primary" id="activate-poll-button" title="Activate Poll">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-play"></i>
+                            <p class="footer-btn-txt">Activate poll</p>
+                        </span>
+                    </button>
+                </div>
+               <!--  <div class="column" id="stop-poll">
+                    <button class="ms-Button ms-Button--primary" id="stop-poll-button" title="Stop this poll">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-stop"></i>
+                            <p class="footer-btn-txt">Stop poll</p>
+                        </span>
+                    </button>
+                </div> -->
+
+
+                <div class="column" id="timestop-poll">
+                 <div class="dropdown-wrapper" id="timestop-dropdown-wrapper">
+                  <div class="dropdown-content" id="timestop-dropdown">
+                    <p onclick="timestopPoll(0)">now</p>
+                    <p onclick="timestopPoll(1)">in 1 min</p>
+                    <p onclick="timestopPoll(2)">in 2 min</p>
+                    <p onclick="timestopPoll(3)">in 3 min</p>
+                    <p onclick="timestopPoll(4)">in 4 min</p>
+                    <p onclick="timestopPoll(5)">in 5 min</p>
+                    <p onclick="timestopPoll(10)">in 10 min</p>
+                  </div>
+                  <button class="ms-Button ms-Button--primary" id="timestop-poll-button" title="Stop this poll in...">
+                    <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-stop"></i>
+                            <p class="footer-btn-txt">Stop poll ...</p>
+                        </span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="column" id="create-pdf">
+                    <button class="ms-Button ms-Button--primary" id="create-pdf-button" title="Create a PDF slide of this view">
+                        <span class="ms-Button-label">
+                            <i id="footer-btn" class="fas fa-file-pdf"></i>
+                            <p class="footer-btn-txt">Create PDF</p>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </section>
+        <div class="footer-left"><b>Source Cloze</b> is free software </div>
+        <div class="footer-right">2019 Josua Glodde, 2020 Anna Sucher</div>
+    </div>
+
+{% verbatim answerTmpl%}
+    <script id="answerTmpl" type="text/x-handlebars-template">
+        <div class="answer-field-bundle" id="cloze-solution">
+            <div class="answer-header">
+                <div id="answer-number">Solution</div>
+            </div>
+            <div class="answer-content" id="answer-field">
+                {{#each clozes}}
+                <div class="myrow">
+                    <div class="column">{{nr}}:</div>
+                    <div class="column code-preview">
+                        <pre><code class="language-{{@root.language}}">{{code}}</code></pre>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </script>
+{% endverbatim answerTmpl%}
+{% verbatim idTmpl%}
+    <script id="idTmpl" type="text/x-handlebars-template">
+        <div class="cloze-id-info" id="id-info-box">
+            <div class="cloze-id-url" style="/*float:left;*/">https://sourcecloze.zdv.uni-mainz.de</div>
+            <div class="cloze-id-info-row myrow">
+                <div class="cloze-id-num">ID: {{cloze_test_id}}</div>
+                <div class="cloze-id-count cloze-id-count-running">
+                    <i class="fas fa-user-check"></i> 
+                    <div id="cloze-id-count-running">0</div>
+                </div>
+            </div>
+            <div  class="myrow">
+                <div id="time-till-stop" style="text-align: center;"></div>
+                <div id='progressbarTimer'></div>
+            </div>
+            <div id="qrcode"></div>
+            
+        </div>
+    </script>
+{% endverbatim idTmpl%}
+{% verbatim contentTmpl%}
+    <script id="contentTmpl" type="text/x-handlebars-template">
+        <!-- only one visible div with id 'answerview-byBundle' or 'answerview-byEach' depend on dropdown value-->
+        <!-- <div class="cloze-id-count">Answers: <div id="cloze-id-count">0</div></div> -->
+        <div id="answerview">
+        <div id="answerview-byBundle">
+            {{#each results.byBundle}}
+            <div class="answer-field-bundle  simpleAnwser" data-id="byBundle-{{@index}}" data-type="byBundle"  data-index="{{@index}}">
+                <div class="answer-header">
+                    
+                    <!--  Colors of svg (fontawesome icons) have to be defined in style-tag! Not as css-class for pdf-creation !!
+                        --cloze-Forbidden:firebrick; --cloze-None:whitesmoke; --cloze-green:seagreen; --cloze-red:crimson; -->
+                    {{#if_eq syntaxcheck 'Forbidden'}}
+                        <i class="fas fa-exclamation-triangle syntax-{{syntaxcheck}}" width="15" height="15" style="color:firebrick"></i> 
+                    {{else}}
+                        {{#if_eq syntaxcheck 'True'}}
+                            <i class="fas fa-check syntax-{{syntaxcheck}}" width="15" height="15" style="color:seagreen"></i>
+                        {{else}}
+                            {{#if_eq syntaxcheck 'False'}}
+                                <i class="fas fa-times syntax-{{syntaxcheck}}" width="15" height="15" style="color:crimson"></i>
+                            {{else}}
+                                <i class="fas fa-question syntax-{{syntaxcheck}}" width="15" height="15" style="color:whitesmoke"></i>
+                            {{/if_eq}}
+                        {{/if_eq}}
+                    {{/if_eq}}
+                    <div id="answer-number">{{name}}</div>
+                    <div id="answer-percentage">{{percentage}}%</div>
+                </div>
+                <div class="answer-content answer-content-bundle hovered">
+                    {{#each clozes}}
+                    <div class="myrow">
+                        <div class="column left code-preview">
+                            <pre><code class="language-{{@root.language}}">{{code}}</code></pre>
+                        </div>
+                        <div class="column right small">{{nr}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        <div id="answerview-byEach">
+            {{#each results.byEach as | byEach |}}
+            <div class="answer-field-each simpleAnwser"> 
+                <div class="answer-header">
+                    <div id="answer-number">Answers</div>
+                    <div id="answer-percentage">{{byEach.nr}}</div>
+                </div>
+                <div class="answer-content answer-content-each">
+                    {{#each clozes}}
+                    <div class="myrow hovered syntaxtask" 
+                        onclick="fillCloze(this.dataset.nr, this.dataset.code)" 
+                        data-nr="{{byEach.nr}}" data-code="{{code}}"
+                        data-id="byEach-{{byEach.nr}}-{{@index}}"
+                        data-type="byEach"
+                        data-nrindex="{{@../index}}" data-index="{{@index}}"
+                        >
+                        <div class="column left code-preview " >
+                           
+                            <!--  Colors of svg (fontawesome icons) have to be defined in style-tag! Not as css-class for pdf-creation !!
+                                --cloze-Forbidden:firebrick; --cloze-None:whitesmoke; --cloze-green:seagreen; --cloze-red:crimson; -->
+                            {{#if_eq syntaxcheck 'Forbidden'}}
+                                <i class="fas fa-exclamation-triangle syntax-{{syntaxcheck}}" width="15" height="15" style="color:firebrick"></i> 
+                            {{else}}
+                                {{#if_eq syntaxcheck 'True'}}
+                                    <i class="fas fa-check syntax-{{syntaxcheck}}" width="15" height="15" style="color:seagreen"></i>
+                                {{else}}
+                                    {{#if_eq syntaxcheck 'False'}}
+                                        <i class="fas fa-times syntax-{{syntaxcheck}}" width="15" height="15" style="color:crimson"></i>
+                                    {{else}}
+                                        <i class="fas fa-question syntax-{{syntaxcheck}}" width="15" height="15" style="color:whitesmoke"></i>
+                                    {{/if_eq}}
+                                {{/if_eq}}
+                            {{/if_eq}}
+                            <pre><code class="language-{{@root.language}}">{{code}}</code></pre>
+                        </div>
+                        <div class="column right">{{percentage}}% </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        </div>
+    </script>
+{% endverbatim contentTmpl %}
+
+
+<!-- Dynamic de-/activated components -->
+ <nav id="context-menu" class="context-menu">
+    <ul class="context-menu__items">
+      <li class="context-menu__item">
+        <a href="#" class="context-menu__link" data-action="syntax-True"> Set
+            <i class="fas fa-check syntax-{{syntaxcheck}}" width="15" height="15" style="color:seagreen"></i>
+        <!-- <svg height="20" width="20" style="display: inline-block;"> -->
+            <!-- <circle cx="12" cy="12" r="5" stroke-width="3" class="syntax-True" /> -->
+            <!-- Green -->
+        <!-- </svg> -->
+        </a>
+      </li>
+      <li class="context-menu__item">
+        <a href="#" class="context-menu__link" data-action="syntax-False">Set
+            <i class="fas fa-times syntax-{{syntaxcheck}}" width="15" height="15" style="color:crimson"></i>
+        </a>
+      </li>
+      <li class="context-menu__item">
+        <a href="#" class="context-menu__link" data-action="syntax-None">Set
+            <i class="fas fa-question syntax-{{syntaxcheck}}" width="15" height="15" style="color:whitesmoke"></i>
+        </a>
+      </li>
+    </ul>
+</nav>
+
+    </div>  <!-- id="body" -->
+
+
+
+<script type="text/javascript" src="{% static 'poll_creation/src/js/PDFcreation.js' %}"></script>
+<script type="text/javascript" src="{% static 'poll_creation/src/js/custommenu.js' %}"></script>
+<script type="text/javascript" src="{% static 'poll_creation/src/js/progressbarTimer.js' %}"></script>
+<script type="text/javascript" src="{% static 'poll_creation/src/js/backendcaller.js' %}"></script>
+<script type="text/javascript" src="{% static 'poll_creation/src/js/helper.js' %}"></script>
+<script type="text/javascript" src="{% static 'poll_creation/src/js/navigation.js' %}"></script>
+<script type="text/javascript" src="{% static 'poll_creation/src/js/events.js' %}"></script>
+<script type="text/javascript" src="{% static 'poll_creation/src/js/index.js' %}"></script>
+
+<script>
+setupGui();
+
+$(document).ready(() => {
+    {% if ct_id %} 
+        ctId = "{{ ct_id }}"
+        {% if resultview %}
+            stopPoll();
+            // setCode(false);
+        {% else %}
+            activatePoll();
+        {% endif %}
+    {% else %}
+        openPollCreation();
+        setCode();
+    {% endif %}
+});
+</script>
+</body>
+</html>

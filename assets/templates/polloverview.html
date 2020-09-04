@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section overview-section">
+{% if request.user.is_authenticated %}
+    <h1 > Welcome {{request.user.first_name}} {{request.user.last_name}}!</h1>
+{% endif %}
+<h1> Your polls: </h1>
+<table id="overview-table">
+  <thead>
+    <tr class="table-header ">
+        <th></th>
+        <th class="sortable">Id<i class="fas fa-sort"></i></th>
+        <th class="sortable">Name<i class="fas fa-sort"></i></th>
+        <!-- <th>Creator</th> -->
+        <th class="sortable">Language<i class="fas fa-sort"></i></th>
+        <th class="sortable">Active<i class="fas fa-sort"></i></th>
+        <th class="sortable">Gaps<i class="fas fa-sort"></i></th>
+        <th class="sortable">Answers<i class="fas fa-sort"></i></th>
+        <th>Settings</th>
+        <th>Cloze</i></th>
+    </tr>
+</thead>
+<tbody>
+  {% if not polls %}
+  <tr class="">
+    <td colspan="100%" style="text-align: center;">You don't have any polls yet.</td>
+  </tr>
+  {% endif %}
+  {% for poll in polls %}
+  <tr class="">
+	  <td data-value="" valign="top" class="textRight" data-th="">
+            <div>
+            <form method="post" action="{% url 'api:delete-poll' %}?next={{ request.path|urlencode }}">
+                {% csrf_token %}
+                <input type="hidden" value="{{ poll.cloze_test_id }}" name="cloze_test_id" />
+                <button class="overview-btn" type="submit" title="Remove poll"><i class="fas fa-trash"></i></button>
+            </form>
+            </div>
+        </td>
+        <td data-value="{{poll.cloze_test_id}}"  valign="top" class="textRight" data-th="Id">
+            <div>
+            <span class="td-span">{{poll.cloze_test_id}}</span>
+            </div>
+        </td>
+        <td data-value="{{poll.cloze_name}}" valign="top" class="textRight" data-th="Name"><div>
+            <span class="td-span">{{poll.cloze_name}}</span>
+        </div></td>
+        <!-- <td data-value="{{poll.cloze_creator}}" valign="top" class="textRight" data-th="Creator"><div> -->
+            <!-- <span class="td-span">{{poll.cloze_creator}}</span></div></td> -->
+        <td data-value="{{poll.language}}" valign="top" class="textRight" data-th="Language"><div>
+            <span class="td-span">{{poll.language}}</span>
+        </div></td>
+        <td data-value="{{poll.active}}" valign="top" class="textRight" data-th="Active"><div>
+            <span class="td-span">{% if poll.active %}<i class="fas fa-check"></i>{% else %}<i class="fas fa-times"></i>{% endif %}</span>
+        </div></td>
+        <td data-value="{{poll.cloze_count}}" valign="top" class="textRight" data-th="Gaps"><div>
+            <span class="td-span">{{poll.cloze_count}}
+            {% if poll.cloze_count <= 0 or poll.cloze_count == None%} 
+                <i title="This is not a quiz." class="fas fa-exclamation"></i>
+            {% endif %}
+            </span>
+        </div></td>
+        <td data-value="{{poll.answer_count}}" valign="top" class="textRight" data-th="Answers"><div>
+            <span class="td-span">{{poll.answer_count}}</span>
+        </div></td>
+        <td data-value="" valign="top" class="overview-settings" class="textRight" data-th="Settings">
+            <div>
+                <form action="{% url 'views:show-poll-view' id=poll.cloze_test_id %}">
+                    <button class="overview-btn" type="submit" value="Show poll"  title="Show Qr-Code view"><i class="fas fa-qrcode btn"></i></button>
+                </form>
+                {% if poll.active %}
+                <form method="post" action="{% url 'api:deactivate-poll' %}?next={{ request.path|urlencode }}">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ poll.cloze_test_id }}" name="cloze_test_id" />
+                    <button class="overview-btn" type="submit" value="Stop"  title="Stop poll"><i class="fas fa-stop"></i></button>
+                </form>
+                {% else %}
+                <form method="post" action="{% url 'api:activate-poll' %}?next={{ request.path|urlencode }}">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ poll.cloze_test_id }}" name="cloze_test_id" />
+                    <button class="overview-btn" type="submit"  title="Start poll"><i class="fas fa-play"></i></button>
+                </form>
+                {% endif %}
+
+                <form method="post" action="{% url 'api:delete-poll-answers' %}?next={{ request.path|urlencode }}">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ poll.cloze_test_id }}" name="cloze_test_id" />
+                    <button class="overview-btn" type="submit"  title="Remove poll answers"  {% if poll.answer_count <= 0 or poll.answer_count == None%} disabled {% endif %}  ><i class="fas fa-backspace"></i></button>
+                </form>
+
+                <form action="{% url 'views:show-poll-result-view' id=poll.cloze_test_id %}">
+                    <button class="overview-btn" type="submit" value="Show results"  title="Show results"><i class="fas fa-poll"></i></button>
+                </form>
+                
+            </div>
+        </td>
+
+        <td data-value="{{poll.cloze_test}}" valign="top" class="textRight" data-th="Code"><div>
+            <details>
+                <summary class="td-span summary-view"  title="Open poll code">
+                <!-- <span class="td-span"> -->
+                Code:
+            <!-- </span> -->
+                </summary>
+                <div class="code-preview">
+                   <pre><code class="language-{{ poll.language }}" id="code-oview">{{ poll.cloze_test }}</code></pre>
+                </div>
+            </details>
+            </div>
+        </td>
+  </tr>
+    {% endfor %}
+</tbody>
+</table>
+</section>    
+{% endblock %}
+
+{% block footer %}
+<div class="content">
+    <div class="row" style="width:100%;">
+        <form class="footer-form"  action="{% url 'views:create-poll-view' %}">
+            <button class="button createpoll-button" type="submit" value="Create your own poll">
+                <span class="fa-stack">
+                <i class="fas fa-plus-square fa-2x"></i>
+                </span>
+                <p class="footer-btn-txt"> Define poll</p>
+            </button>
+        </form>
+        <form action="{% url 'views:home' %}" style="display:inline-block;">
+            <button class="button createpoll-button" type="submit" value="Vote a poll">
+                <span class="fa-stack">
+                  <i class="far fa-comment fa-2x"></i>
+                  <i class="fas fa-code fa-stack-1x fa-inverse"></i>
+                </span>
+                <p class="footer-btn-txt"> Vote poll</p>
+            </button>
+        </form>
+        <div class="right">
+        {% if request.user.is_authenticated %}
+        <form class="footer-form" action="{% url 'auth:logout' %}?next={{ request.path|urlencode }}' %}">
+            <button class="button createpoll-button" type="submit">
+                <span class="fa-stack">
+                <i class="fas fa-sign-out-alt fa-2x"></i>
+                </span>
+                <p class="footer-btn-txt"> Logout</p>
+            </button>
+        </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+<style type="text/css">
+</style>

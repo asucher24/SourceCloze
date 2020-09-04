@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section home-section">
+    {% for message in messages %}
+    <div class="message-text invalid-session">{{ message }}</div>
+    {% endfor %}
+    <form action="{% url 'views:vote' %}" method="post">
+    {% csrf_token %}
+        <div class="center-content session-field">
+            <input class="session-input" type="text" name="cloze_test_id" placeholder="Enter poll ID" value="{{ id }}">
+        </div>
+        <div class="center-content">
+            <input class="button join-button" type="submit" value="Join">
+        </div>
+    </form>
+
+</section>    
+{% endblock %}

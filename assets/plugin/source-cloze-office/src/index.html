@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SourceCloze</title>
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.debug.js"></script>
+
+    <!-- CDN -->
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
+
+    <!-- Template styles -->
+    <link href="app.css" rel="stylesheet" type="text/css" />
+
+    <!-- Syntax highlighter styles -->
+    <link rel="stylesheet" type="text/css" href="prism/prism.css" />
+
+</head>
+
+<body id="body">
+    <section class="main">
+        <header>
+            <img class="logo" width="300" height="64" src="assets/source-cloze-logo.png" alt="SourceCloze" title="SourceCloze" />
+        </header>
+
+        <section id="create-body">
+            <div class="ms-Dropdown" tabindex="0">
+                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
+                <select class="ms-Dropdown-select" id="language-dropdown">
+                    <option>Python</option>
+                    <option>Java</option>
+                    <option>C</option>
+                    <option>C++</option>
+                    <option>R</option>
+                    <option>JavaScript</option>
+                </select>
+            </div>
+
+            <div class="ms-TextField ms-TextField--multiline">
+                <label class="ms-Label">Source code</label>
+                <textarea class="ms-TextField-field" id="code-text">print(CL{'Hello, World!'}ZE) # Start</textarea>
+            </div>
+
+            <div class="row">
+                <div class="column ms-Toggle">
+                    <span class="ms-Toggle-description">Hide clozes</span>
+                    <input type="checkbox" id="demo-toggle-3" class="ms-Toggle-input" />
+                    <label for="demo-toggle-3" class="ms-Toggle-field" id="cloze-toggle" tabindex="0">
+                        <span class="ms-Label ms-Label--off">Off</span>
+                        <span class="ms-Label ms-Label--on">On</span>
+                    </label>
+                </div>
+                <div class="column range-slider">
+                    <span class="ms-Toggle-description">Code size</span>
+                    <input type="range" id="code-size-slider" value="18" min="12" max="32">
+                </div>
+            </div>
+        </section>
+
+        <div class="code-preview">
+            <pre><code class="language-python" id="code-view"></code></pre>
+        </div>
+
+        <section class="poll-button">
+            <div class="row">
+                <div class="column" id="create-poll">
+                    <button class="ms-Button ms-Button--primary" id="create-poll-button">
+                        <span class="ms-Button-label">Create poll</span>
+                    </button>
+                </div>
+                <div class="column" id="edit-poll">
+                    <button class="ms-Button ms-Button--secondary" id="edit-poll-button">
+                        <i class="ms-Icon ms-Icon--ChevronLeft"></i>
+                        <span class="ms-Button-label">Edit poll</span>
+                    </button>
+                </div>
+                <div class="column" id="start-poll">
+                    <button class="ms-Button ms-Button--primary" id="start-poll-button">
+                        <span class="ms-Button-label">Start poll</span>
+                    </button>
+                </div>
+                <div class="column" id="stop-poll">
+                    <button class="ms-Button ms-Button--primary" id="stop-poll-button">
+                        <span class="ms-Button-label">Stop poll</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <section class="sidebar" id="sidebar"></section>
+
+    <script id="answerTmpl" type="text/x-handlebars-template">
+        <div class="answer-field" id="cloze-solution">
+            <div class="answer-header">
+                <div id="answer-number">Solution</div>
+            </div>
+            <div class="answer-content" id="answer-field">
+                {{#each clozes}}
+                <div class="row">
+                    <div class="column">{{nr}}:</div>
+                    <div class="column code-preview">
+                        <pre><code class="language-{{@root.language}}">{{code}}</code></pre>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </script>
+
+    <script id="idTmpl" type="text/x-handlebars-template">
+        <div class="cloze-id-info" id="id-info-box">
+            <div class="cloze-id-url">https://cloze.jglod.de</div>
+            <div class="cloze-id-num">{{cloze_test_id}}</div>
+            <div id="qrcode"></div>
+        </div>
+    </script>
+
+    <script id="contentTmpl" type="text/x-handlebars-template">
+        {{#each results}}
+        <div class="answer-field">
+            <div class="answer-header">
+                <div id="answer-number">{{name}}</div>
+                <div id="answer-percentage">{{percentage}}</div>
+            </div>
+            <div class="answer-content">
+                {{#each clozes}}
+                <div class="row">
+                    <div class="column">{{nr}}:</div>
+                    <div class="column code-preview">
+                        <pre><code class="language-{{@root.language}}">{{code}}</code></pre>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/each}}
+    </script>
+</body>
+
+</html>

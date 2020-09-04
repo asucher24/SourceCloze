@@ -1,0 +1,55 @@
+image: "debian:10"
+#image: "python:3.7"
+variables:
+   DOCKER_HOST: tcp://docker:2375/
+   DOCKER_DRIVER: overlay2
+   SHARED_PATH: /builds/shared/$CI_PROJECT_PATH
+
+services:
+  - name: docker:18.09-dind
+    alias: docker
+
+before_script:
+  - apt-get update
+  - apt-get install python3 python3-pip -y
+  - python3 -m pip install -r requirements.txt
+  - apt-get install curl apt-transport-https ca-certificates curl software-properties-common gnupg2 -y
+  - curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+  - apt-get update
+  - apt-get install docker-ce -y
+  - usermod -aG docker root
+
+stages:
+  - Static Analysis
+  - Unit Test
+  - Production
+
+flake8:
+  stage: Static Analysis
+  allow_failure: true
+  script:
+  - python3 -m pip install flake8
+  - flake8 --max-line-length=120
+
+pylint:
+  stage: Static Analysis
+  allow_failure: true
+  script:
+  - python3 -m pip install pylint
+  - pylint *
+
+django_unit_test:
+  stage: Unit Test
+  script:
+  - apt-get install default-jdk -y
+  - apt-get install gcc -y 
+  - apt-get install nodejs -y
+  - python3 manage.py makemigrations
+  - python3 manage.py migrate --fake
+  - python3 manage.py test --noinput
+
+production:
+  stage: Production
+  script:
+  - ./installForProduction.sh

@@ -1,0 +1,78 @@
+  <!-- Overlay content -->
+<h1>Documentation v2</h1>
+<p> This application is developed by two students of the Johannes Gutenberg-University Mainz.</p>
+<br /><p> "From students to students" you could say.</p>
+<br /><p> This documentation is splitted into the view sections visible for the poll admin. </p>
+<p> They are diveded into the following:</p>
+<h2>Poll Overview</h2>
+The overview shows all your created polls. Using the buttons you can do the following for each row
+<div class=""><i class="fas fa-trash"></i> Remove the entire poll and answers. This action can not be undone. </div>
+<div class=""><i class="fas fa-qrcode"></i> Open the access view of the poll</div>
+<div class=""><i class="fas fa-play"></i> Start the poll</div>
+<div class=""><i class="fas fa-stop"></i> Stop the poll</div>
+<div class=""><i class="fas fa-backspace"></i> Remove only the answers for the specific poll. This action can not be undone. </div>
+<div class=""><i class="fas fa-poll"></i> Stop the poll and open the resolution view</div>
+
+<h2>Poll Creation</h2>
+To create a poll you need the following information: <br />
+<ul>
+	<li><b>Poll Name</b>: This name is only for searching your poll in the overview. So no need to open the code.</li>
+	<li><b>Language</b>: This is the programming language of the source code in the poll. It affects the syntax highlighting as well as the syntax check. </li>
+	<li><b>Source Code</b>: This is the actuall cloze quiz. It should contain at least one gap defined with 'CL{answer}ZE'.The answer between the brackets should be the correct one. Additionally you can define which part is visible for the participants using: '{SOURCE}' and '{SOURCEEND}'. The entire code will be compiled, but only the code between the tags will be visible for the participants. In the admin view you can choose how to display it, all of the code or just the visible part. Keep in mind this code is the basis for compiling. If there is an error, all compiling results will fail. If there is no error, it is possible that the specific code snipped with the CL{}ZE gaps, was not compiled (e.g. inside a method, which was not called). We will call this behavior "False Negativ". So the result of the compiling depends also on the poll definition.
+	</li>
+</ul>
+<h4> Examples for poll definitions </h4>
+<div  style="border: 1px solid black; display: inline-block;"><span  style="white-space: pre"><samp># Source Code: Python
+# the code between source is visible
+{SOURCE}
+def myfunction():
+    # define a cloze gap like showed below.
+    # Following method prints "Hello World!"
+    print(CL{"Hello World!"}ZE)
+{SOURCEEND}
+if __name__ == "__main__":
+    myfunction()
+</samp></span></div>
+<div  style="border: 1px solid black; display: inline-block;"><span style="white-space: pre"><samp>// Source Code: Java
+public class HelloWorld 
+{
+    public static void main (String[] args)
+    {
+	// the code between source is visible
+	{SOURCE}
+        // define a cloze gap like showed below
+        // Following method prints "Hello World!"
+        System.out.println(CL{"Hello World!"}ZE);
+	{SOURCEEND}
+    }
+}
+</samp></span></div>
+<br />
+<h2>Poll Access</h2>
+Depending on the status of the poll (inactive or active) you will see just a preview or the access view of the poll. Because the preview has no interesting feature, we will describe only the access view. <br />
+There are three interesting things in this view: <br />
+<div class=""><b>Export as PDF:</b> It is possible to export this access view as a PDF slide, so you can import it into your presentation. <u>Hint:</u> The website URL in the PDF slide differs from where the link navigates to. It links to the access view, so you can easily access this view while presenting. It's not a bug it's a feature. <u>Review the created file:</u> It may be that the slide does not look as pretty as it should. This depends also on the 'zoom' of your browser. You can use 'Strg + "+"' or 'Strg + "-"' in your browser to zoom in or out. Maybe it helps a bit ;-)</div>
+<div class=""><b>Current Answers:</b> You can see the current answers for your poll, so you can stop the poll or allow more time to participate.</div>
+<div class=""><b>Stopping a poll:</b> At the beginning the poll it is running infinitly. You can trigger a stop of the poll immediately ("now") or automaticly in the selected time (e.g. 5 Minutes). You should not close the browser or tab, because it would prevent the timer from stopping. <u>Hint:</u> If you want to change the time, just press any stopping-time you prefer. It will overwrite the previous selected time.</div>
+<br />
+<h2>Poll Resolution</h2>
+The resolution contains two different ways to display the answers. The default display method shows the answers in a 'bundled' format. Bundled means the whole answer consists of at least one single gap answer. <br />
+The other way is to show the answers depending on the CL{}ZE gap.<br />
+Like in the access view, you can export this view as a PDF as well. BUT: Select the view you want to export ('bundled' or 'each'). The created PDF contains at least one slide. <br />
+<u>Watch out for False Negativ results of the syntax check!</u> Like descripted in the section 'poll creation' the result also depends on the definition of the source code. <br />
+<u>Select an answer:</u> If you want to have a look at what the answer looks like in the context of the cloze, select it. The Button <u>reset</u> will redo it. <br />
+<b>Hint:</b> The view with the answers sorted by each gap ('each') allows to change the syntax check result! If you notice a "False Negative" Error or something else: change it by do a "Right Click" on the single answer.<br />
+In the following the meanings of the icons are described. They indicate the result of the syntax check. 
+
+<div class=""><i class="fas fa-exclamation-triangle syntax-Forbidden" width="15" height="15" style="color:firebrick"></i> We did not compile or execute this answer. It contains commands or words that are forbidden for execution, because they could do eval things. (for a bundled answer: at least one single answer is forbidden)</div>
+<div class=""><i class="fas fa-check syntax-True" width="15" height="15" style="color:seagreen"></i> This command was compiled/executed successfully. (Be careful: remember the "False Negativ")</div>
+<div class=""><i class="fas fa-times syntax-False"  width="15" height="15" style="color:crimson"></i> There was an error while checking the syntax of the answer (for a bundeled answer: at least one single answer is wrong)</div>
+<div class=""><i class="fas fa-question syntax-None"  width="15" height="15" style="color:grey"></i> The syntax check took too much time. The reason could be that the defined source code simply takes a lot of time to compile/execute, but is correct. Another reason could be an infinite loop. We are sorry, but we don't know. We want to protect the application, so we broke up the check after a defined period of time. </div>
+
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />

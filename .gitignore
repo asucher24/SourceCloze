@@ -1,0 +1,16 @@
+.db.sqlite3
+config/.env
+*~
+*.swp
+*.pyc
+*/migrations/000*_*.py
+/.gtm/
+__pycache__
+sourceclozeenv/
+assets/docs/build/*
+.static
+.tmp/
+restartDjango.sh
+restartRunServer.sh
+.coverage
+cover/
