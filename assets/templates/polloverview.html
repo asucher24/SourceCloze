@@ -33,7 +33,8 @@
             <form method="post" action="{% url 'api:delete-poll' %}?next={{ request.path|urlencode }}">
                 {% csrf_token %}
                 <input type="hidden" value="{{ poll.cloze_test_id }}" name="cloze_test_id" />
-                <button class="overview-btn" type="submit" title="Remove poll"><i class="fas fa-trash"></i></button>
+                <button class="overview-btn" type="submit" title="Remove poll"
+                    onclick="return confirm('Do you really want to delete the poll?');" ><i class="fas fa-trash"></i></button>
             </form>
             </div>
         </td>
@@ -85,7 +86,8 @@
                 <form method="post" action="{% url 'api:delete-poll-answers' %}?next={{ request.path|urlencode }}">
                     {% csrf_token %}
                     <input type="hidden" value="{{ poll.cloze_test_id }}" name="cloze_test_id" />
-                    <button class="overview-btn" type="submit"  title="Remove poll answers"  {% if poll.answer_count <= 0 or poll.answer_count == None%} disabled {% endif %}  ><i class="fas fa-backspace"></i></button>
+                    <button class="overview-btn" type="submit"  title="Remove poll answers"  {% if poll.answer_count <= 0 or poll.answer_count == None%} disabled {% endif %}  
+                    onclick="return confirm('Do you really want to delete the poll ansers?');" ><i class="fas fa-backspace"></i></button>
                 </form>
 
                 <form action="{% url 'views:show-poll-result-view' id=poll.cloze_test_id %}">
